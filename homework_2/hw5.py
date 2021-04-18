@@ -31,24 +31,19 @@ def custom_range(sequence, *args):
                 break
             result.append(i)
     elif len(args) == 2:
-        start = args[0]
-        stop = args[1]
-        start_index = sequence.index(start)
-        stop_index = sequence.index(stop)
+        start_index = sequence.index(args[0])
+        stop_index = sequence.index(args[1])
         for i in sequence[start_index:stop_index]:
             result.append(i)
     elif len(args) == 3:
-        start = args[0]
-        stop = args[1]
-        step = args[2]
-        start_index = sequence.index(start)
-        stop_index = sequence.index(stop)
-        if step < 0:
+        start_index = sequence.index(args[0])
+        stop_index = sequence.index(args[1])
+        if args[2] < 0:
             while stop_index < start_index:
                 result.append(sequence[start_index])
-                start_index += step
+                start_index += args[2]
         else:
             while start_index < stop_index:
                 result.append(sequence[start_index])
-                start_index += step
+                start_index += args[2]
     return result
