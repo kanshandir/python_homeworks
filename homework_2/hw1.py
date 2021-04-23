@@ -32,21 +32,19 @@ def validate_line(line: str) -> bool:
 
 
 def validate_date(date: str) -> bool:
+    date = date.strip().split()[-1]
     if len(date.split("-")) != 3:
         return False
     year, month, day = date.split("-")
-    if len(year) == 4 and len(month) == 2 and len(day) == 2 and year.isdigit() and month.isdigit() and day.isdigit():
-        return True
-    return False
+    return len(year) == 4 and len(month) == 2 and len(day) == 2 and year.isdigit() and month.isdigit() and day.isdigit()
 
 
 def check_data(filepath: str, validators: Iterable[Callable]) -> str:
-    validators = list(validators)
     with open(filepath) as file:
         with open("result.txt", "w") as result:
             for line in file:
-                if not validators[1](line.strip()):
-                    result.write(line.strip() + f" {validators[1].__name__}\n")
-                elif not validators[0](line.strip().split()[-1]):
-                    result.write(line.strip() + f" {validators[0].__name__}\n")
+                for validator in validators:
+                    if not validator(line.strip()):
+                        result.write(line.strip() + f" {validator.__name__}\n")
+                        break
     return os.path.abspath("result.txt")
