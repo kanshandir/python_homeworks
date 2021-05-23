@@ -6,7 +6,7 @@ from good import SomeClass as good_dict
 REQUEST_URL = "https://vpic.nhtsa.dot.gov/api/vehicles/getallmanufacturers?format=json"
 
 
-@pytest.mark.parametrize("dict_func", [good_dict])
+@pytest.mark.parametrize("dict_func", [good_dict, bad_dict])
 def test_dict_length(dict_func):
     dict_length = len(dict_func(REQUEST_URL))
     assert dict_length == 79, f"Expected length to be 79, but got {dict_length} instead"
