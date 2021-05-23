@@ -1,7 +1,7 @@
 import pytest
 
 from bad import create_country_make_dict as bad_dict
-from good import SomeClass as good_dict
+from good import create_country_make_dict as good_dict
 
 REQUEST_URL = "https://vpic.nhtsa.dot.gov/api/vehicles/getallmanufacturers?format=json"
 

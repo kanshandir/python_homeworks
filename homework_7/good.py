@@ -27,26 +27,28 @@ logging.basicConfig(level=logging.INFO)
 # https://vpic.nhtsa.dot.gov/api/vehicles/getallmanufacturers?format=json
 
 
-class SomeClass:
-    def __init__(self, url, page=1):
+class PagePaginator:
+    def __init__(self, url):
         self.url = url
-        self.page = page
+        self.page = 1
+        self.stop = False
 
-    def __len__(self):
-        return len(self.url)
-
-    def __getitem__(self):
-        responce = requests.get(f"{self.url}&page={self.page}")
-        make_dict = responce.json()
-        if not make_dict['Count']:
-            raise StopIteration
+    def __getitem__(self, item):
+        response = requests.get(f"{self.url}&page={self.page}")
+        resp_dict = response.json()
+        logging.info(f"Done with page {self.page}")
+        if not resp_dict["Count"]:
+            self.stop = True
         self.page += 1
+        return resp_dict[item]
 
-    def create_country_make_dict(self, make_dict):
-        country_manufacturers: Dict[str, List[str]] = defaultdict(list)
-        for manufacturer in make_dict["Results"]:
+
+def create_country_make_dict(url: str):
+    country_manufacturers: Dict[str, List[str]] = defaultdict(list)
+    page_paginator = PagePaginator(url)
+    while not page_paginator.stop:
+        for manufacturer in page_paginator["Results"]:
             country = manufacturer["Country"]
             if country:
                 country_manufacturers[country].append(manufacturer["Mfr_Name"])
-            logging.info(f"Done with page {self.page}")
-        return country_manufacturers
+    return country_manufacturers
