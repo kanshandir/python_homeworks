@@ -24,6 +24,7 @@ import requests
 
 logging.basicConfig(level=logging.INFO)
 
+
 # https://vpic.nhtsa.dot.gov/api/vehicles/getallmanufacturers?format=json
 
 
@@ -31,23 +32,24 @@ class PagePaginator:
     def __init__(self, url):
         self.url = url
         self.page = 1
-        self.stop = False
+        # self.stop = False
 
     def __getitem__(self, item):
         response = requests.get(f"{self.url}&page={self.page}")
-        resp_dict = response.json()
+        make_dict = response.json()
         logging.info(f"Done with page {self.page}")
-        if not resp_dict["Count"]:
-            self.stop = True
+        if not make_dict["Count"]:
+            raise StopIteration
+            # self.stop = True
         self.page += 1
-        return resp_dict[item]
+        return make_dict["Results"]
 
 
 def create_country_make_dict(url: str):
     country_manufacturers: Dict[str, List[str]] = defaultdict(list)
     page_paginator = PagePaginator(url)
-    while not page_paginator.stop:
-        for manufacturer in page_paginator["Results"]:
+    for page in page_paginator:
+        for manufacturer in page:
             country = manufacturer["Country"]
             if country:
                 country_manufacturers[country].append(manufacturer["Mfr_Name"])
